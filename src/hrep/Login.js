@@ -1,6 +1,7 @@
 import axios from 'axios'
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import "./hrep.css"
 
 const Login = () => {
     const nav = useNavigate()
@@ -8,51 +9,44 @@ const Login = () => {
         email:    "",
         password: "",
     })
+    const [Message,setMessage] = useState("")
     const handleUser = (e)=>{
         setUser({...User,[e.target.name]:e.target.value})
     }
     const login = async(e)=>{
       e.preventDefault();
       localStorage.clear()
-      console.log(localStorage.getItem('token'))
       await axios.post("https://hrishabh-hrep-login.onrender.com/login",User)
-      .then(res=>{localStorage.setItem("token",(res.data.token));console.log(localStorage.getItem('token'))})
-      .catch(err=>console.log(err))
-      nav('/dashboard')
+      .then(res=>{
+        console.log(res.data)
+        setMessage(res.data.msg)
+        if(res.data.token){
+          localStorage.setItem("token",(res.data.token))
+          setTimeout(()=>{
+            nav('/dashboard')
+          },1500)
+        }
+      })
+      .catch(err=>console.log(err.response.data.msg))
     }
-      // const [Token,setToken] = useState("")
-      // useEffect(()=>{
-      //   setToken(localStorage.getItem('token'))
-      // },[setToken])
-      // localStorage.clear()
-      // const Bush = localStorage.getItem("token")
-      // console.log(Bush)
-    
-    // useEffect(()=>{
-    //     localStorage.setItem("token",JSON.stringify(Token))
-    //     const token = JSON.parse(localStorage.getItem('token'));
-    //     // console.log(token)
-    //     if (token) {
-    //         setToken(token);
-    //         }
-    // },[Token])
-      // console.log(Token)
-      // setUser({...User,token:res.data.token})}
-    // localStorage.clear()
   return (
-    <div>
-      <h1>This is Login Page</h1>
-      <div>
-        <h3>This is login tab</h3>
-        <form onSubmit={login}>
-          <label>Email</label>
-          <input type='text' name='email' onChange={handleUser}/><br/>
-          <label>Password</label>
-          <input type='password' name='password' onChange={handleUser}/><br/>
-          <button type='submit'>Submit</button>
-        </form>
-      </div>
-      <button onClick={()=>nav("/signup")}>Go to Register/Signup</button>
+    <div className='Page'>
+      <h1>Welcome <br/> Hrep</h1>
+      <form onSubmit={login}>
+        <div className="form-floating mb-3">
+          <input name='email' onChange={handleUser} type="email" className="form-control" id="floatingInput" placeholder="name@example.com"/>
+          <label htmlFor="floatingInput">Email address</label>
+        </div>
+        <div className="form-floating">
+          <input name='password' onChange={handleUser} type="password" className="form-control" id="floatingPassword" placeholder="Password"/>
+          <label htmlFor="floatingPassword">Password</label>
+        </div>
+        {
+          Message ? <div id="emailHelp" className="form-text">{Message}</div> : ""
+        }
+        <button type='submit'>Submit</button>
+      </form>
+      <p className='bottom_msg' onClick={()=>nav("/signup")}>Don't have an account? Sign Up</p>
     </div>
   )
 }

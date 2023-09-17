@@ -1,27 +1,35 @@
 import axios from 'axios'
 import React, { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 
 const Dashboard = () => {
-    console.log(localStorage.getItem('token'))
-    // console.log(token)
-    // const [Token] = useState(localStorage.getItem('token'))
-    // console.log(Token)
+    const nav = useNavigate()
     const [Data,setData] = useState('')
     useEffect(()=>{
-        console.log(localStorage.getItem('token'))
         const token = localStorage.getItem('token')
-        axios.get("https://hrishabh-hrep-login.onrender.com/login/dashboard",{
-            headers:{
-                "authorization": `bearer ${token}`
-            }
-        })
-        .then((res)=>{console.log(res.data.msg);if(res.data){setData(res.data)}})
-        .catch(err=>console.log(err))
-    },[])
+        const interval = setInterval(() => {
+            axios.get("https://hrishabh-hrep-login.onrender.com/login/dashboard",{
+                headers:{
+                    "authorization": `bearer ${token}`
+                }
+            })
+            .then((res)=>setData(res.data.msg))
+            .catch(err=>{
+                console.log(err.response.data.msg)
+                setTimeout(()=>{
+                    return nav("/")
+                },500)
+            })
+          }, 1000);
+        return () => clearInterval(interval);
+    },[nav])
+
   return (
-    <div>Dashboard
+    <>
+    <div className='dashboard'>
         <h1>{Data}</h1>
     </div>
+    </>
   )
 }
 
