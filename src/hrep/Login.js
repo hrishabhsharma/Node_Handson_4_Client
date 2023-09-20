@@ -13,10 +13,10 @@ const Login = () => {
     const handleUser = (e)=>{
         setUser({...User,[e.target.name]:e.target.value})
     }
-    const login = async(e)=>{
+    const login = (e)=>{
       e.preventDefault();
       localStorage.clear()
-      await axios.post("https://hrishabh-hrep-login.onrender.com/login",User)
+      axios.post("https://hrishabh-hrep-login.onrender.com/login",User)
       .then(res=>{
         console.log(res.data)
         setMessage(res.data.msg)
